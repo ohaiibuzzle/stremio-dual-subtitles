@@ -89,9 +89,7 @@ const {
 const ADDON_NAME = process.env.ADDON_NAME || 'Dual Subtitles';
 const ADDON_VERSION = '1.0.0';
 
-let _addonBaseUrl = '';
-function setBaseUrl(url) { _addonBaseUrl = url.replace(/\/$/, ''); }
-function getBaseUrl() { return _addonBaseUrl; }
+
 
 // Create addon manifest
 const manifest = {
@@ -659,8 +657,9 @@ async function subtitlesHandler({ type, id, extra, config }) {
 
       finalSubtitles.push({
         id: `dual-${selectedMainSub.id}-${transSubInfo.id}`,
-        url: `${getBaseUrl()}/subs/${dynamicParams}.srt`,
-        lang: mainLang
+        url: `{{ADDON_URL}}/subs/${dynamicParams}.srt`,
+        lang: `${mainLang}+${transLang}`,
+        SubtitlesName: `🌍 ${getLanguageName(mainLang)} + ${getLanguageName(transLang)}`
       });
     }
 
@@ -766,7 +765,6 @@ async function generateDynamicSubtitle(type, imdbId, season, episode, mainLang, 
 module.exports = {
   builder,
   manifest,
-  setBaseUrl,
   getSubtitle,
   subtitleCache,
   subtitlesHandler,

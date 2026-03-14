@@ -18,17 +18,13 @@ const {
   getAnalyticsSummary 
 } = require('./lib/analytics');
 const { generateStatsHTML, generatePrivacyHTML, generateErrorHTML } = require('./lib/templates');
-const { builder, manifest, setBaseUrl, getSubtitle, subtitlesHandler, generateDynamicSubtitle } = require('./addon');
+const { builder, manifest, getSubtitle, subtitlesHandler, generateDynamicSubtitle } = require('./addon');
 const generateLandingHTML = require('./landingTemplate');
 const { parseLangCode } = require('./languages');
 
 // Configuration
 const PORT = process.env.PORT || 7000;
 const HOST = process.env.HOST || '0.0.0.0';
-
-// Set addon base URL early so subtitle handler can build absolute URLs
-const externalUrl = process.env.EXTERNAL_URL || `http://localhost:${PORT}`;
-setBaseUrl(externalUrl);
 
 // Get external URL for manifest
 function getExternalUrl(req) {
@@ -73,9 +69,6 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
-  }
-  if (process.env.VERCEL) {
-    setBaseUrl(getExternalUrl(req));
   }
   next();
 });
@@ -353,38 +346,41 @@ app.get('/:config/manifest.json', (req, res) => {
 });
 
 // Configuration-specific subtitles handler
-// Cannot use SDK router because it JSON.parse()s the config param,
-// but our config uses pipe-separated format (e.g. "English [eng]|Turkish [tur]")
 app.get('/:config/subtitles/:type/:id/:extra?.json', async (req, res) => {
   try {
     const configParam = decodeURIComponent(req.params.config);
     const [mainLang, transLang] = configParam.split('|');
-
+    
     if (!mainLang || !transLang) {
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      return res.end(JSON.stringify({ subtitles: [] }));
+      return res.status(400).json({ subtitles: [] });
     }
 
     const { type, id } = req.params;
     const extra = req.params.extra ? parseExtra(req.params.extra) : {};
-    const config = { mainLang, transLang };
+
+    const config = {
+      mainLang,
+      transLang
+    };
 
     trackSubtitleRequest(parseLangCode(mainLang), parseLangCode(transLang), type, id);
     debugServer.log(`Subtitle request: ${type}/${id}, langs: ${parseLangCode(mainLang)}+${parseLangCode(transLang)}`);
 
     const result = await subtitlesHandler({ type, id, extra, config });
+    
+    // Replace placeholder URL with actual server URL
+    const baseUrl = getExternalUrl(req);
+    if (result.subtitles) {
+      result.subtitles = result.subtitles.map(sub => ({
+        ...sub,
+        url: sub.url.replace('{{ADDON_URL}}', baseUrl)
+      }));
+    }
 
-    const cacheControl = Number.isInteger(result.cacheMaxAge)
-      ? `max-age=${result.cacheMaxAge}, public`
-      : null;
-
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    if (cacheControl) res.setHeader('Cache-Control', cacheControl);
-    res.end(JSON.stringify(result));
+    res.json(result);
   } catch (error) {
     debugServer.error('Error handling subtitle request:', sanitizeForLogging(error.message));
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ subtitles: [] }));
+    res.json({ subtitles: [] });
   }
 });
 
