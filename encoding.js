@@ -37,6 +37,9 @@ const ISO639_3_TO_1 = {
   // Middle Eastern
   'heb': 'he', 'per': 'fa', 'fas': 'fa', 'urd': 'ur',
   
+  // Creole languages
+  'hat': 'ht',
+  
   // Asian languages
   'ben': 'bn', 'tha': 'th', 'vie': 'vi', 'ind': 'id',
   'may': 'ms', 'msa': 'ms', 'tgl': 'tl',

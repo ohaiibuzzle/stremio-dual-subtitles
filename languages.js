@@ -32,6 +32,7 @@ const languageMap = {
   'geo': 'Georgian',
   'ger': 'German',
   'ell': 'Greek',
+  'hat': 'Haitian Creole',
   'heb': 'Hebrew',
   'hin': 'Hindi',
   'hun': 'Hungarian',
@@ -97,7 +98,7 @@ const browserLanguageMap = {
   'sk': 'slo', 'sl': 'slv', 'et': 'est', 'lv': 'lav', 'lt': 'lit',
   'ca': 'cat', 'eu': 'baq', 'gl': 'glg', 'mk': 'mac', 'is': 'ice',
   'cy': 'wel', 'ga': 'gle', 'az': 'aze', 'ka': 'geo', 'hy': 'arm',
-  'be': 'bel', 'bs': 'bos', 'km': 'khm', 'my': 'bur', 'ne': 'nep',
+  'be': 'bel', 'bs': 'bos', 'ht': 'hat', 'km': 'khm', 'my': 'bur', 'ne': 'nep',
   'si': 'sin', 'sw': 'swa', 'uz': 'uzb', 'kk': 'kaz', 'mn': 'mon',
 };
 

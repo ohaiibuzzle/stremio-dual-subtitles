@@ -1043,6 +1043,7 @@ function generateLandingHTML(manifest, baseUrl) {
       'Burmese [bur]': 'မင်္ဂလာပါ, ဒီနေ့ကျန်းမာပါသလား?',
       'Esperanto [epo]': 'Saluton, kiel vi fartas hodiau?',
       'Georgian [geo]': 'გამარჯობა, როგორ ხარ დღეს?',
+      'Haitian Creole [hat]': 'Bonjou, koman ou ye jodi a?',
       'Irish [gle]': 'Dia duit, conas atá tú inniu?',
       'Kannada [kan]': 'ಹಲೋ, ಇಂದು ನೀವು ಹೇಗಿದ್ದೀರಿ?',
       'Kazakh [kaz]': 'Сәлем, бүгін қалдарыңыз?',
